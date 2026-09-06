@@ -1,3 +1,3 @@
-module github.com/ysmood/gson
+module github.com/headlesslab/lazyjson
 
-go 1.15
+go 1.21

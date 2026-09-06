@@ -1,0 +1,8 @@
+# gson v0.7.3 ran golangci-lint without a configuration file (its .gitignore
+# even ignored .golangci.yml), that is with the standard linters only. This file
+# keeps that behaviour under the v2 schema; without it the reusable workflow
+# would apply the headlesslab default configuration to the verbatim import.
+# Tightening the rules is a change of its own.
+version: "2"
+linters:
+  default: standard

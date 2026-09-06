@@ -1,5 +1,5 @@
-// Package gson A tiny JSON lib to read and alter a JSON value.
-package gson
+// Package lazyjson is a tiny JSON library to read and alter a JSON value.
+package lazyjson
 
 import (
 	"bytes"
@@ -27,7 +27,7 @@ func (j JSON) MarshalJSON() ([]byte, error) {
 // It should be called before other operations.
 func (j JSON) Unmarshal(v interface{}) error {
 	if j.value == nil {
-		return fmt.Errorf("gson: no value to unmarshal")
+		return fmt.Errorf("lazyjson: no value to unmarshal")
 	}
 
 	j.lock.Lock()
@@ -35,7 +35,7 @@ func (j JSON) Unmarshal(v interface{}) error {
 
 	b, ok := (*j.value).([]byte)
 	if !ok {
-		return fmt.Errorf("gson: value has been parsed")
+		return fmt.Errorf("lazyjson: value has been parsed")
 	}
 
 	return json.Unmarshal(b, v)

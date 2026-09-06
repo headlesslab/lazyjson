@@ -1,4 +1,4 @@
-package gson_test
+package lazyjson_test
 
 import (
 	"bytes"
@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ysmood/gson"
+	"github.com/headlesslab/lazyjson"
 )
 
 func ExampleJSON() {
-	obj := gson.NewFrom(`{"a": {"b": [1, 2]}}`)
+	obj := lazyjson.NewFrom(`{"a": {"b": [1, 2]}}`)
 
 	fmt.Println(obj.Get("a.b.0").Int())
 
@@ -34,25 +34,25 @@ func ExampleJSON() {
 func Test(t *testing.T) {
 	eq := genEq(t)
 
-	eq(gson.NewFrom("true").Bool(), true)
-	eq(gson.New([]byte("10")).Int(), 10)
-	eq(gson.New(10).Int(), 10)
-	eq(gson.New(gson.New(10)).Int(), 10)
-	eq(gson.JSON{}.Int(), 0)
-	eq(gson.JSON{}.JSON("", ""), "null")
-	eq(gson.New(nil).Num(), 0.0)
-	eq(gson.New(nil).Bool(), false)
+	eq(lazyjson.NewFrom("true").Bool(), true)
+	eq(lazyjson.New([]byte("10")).Int(), 10)
+	eq(lazyjson.New(10).Int(), 10)
+	eq(lazyjson.New(lazyjson.New(10)).Int(), 10)
+	eq(lazyjson.JSON{}.Int(), 0)
+	eq(lazyjson.JSON{}.JSON("", ""), "null")
+	eq(lazyjson.New(nil).Num(), 0.0)
+	eq(lazyjson.New(nil).Bool(), false)
 
 	buf := bytes.NewBufferString("10")
-	fromBuf := gson.New(buf)
+	fromBuf := lazyjson.New(buf)
 	eq(fromBuf.Int(), 10)
 	eq(fromBuf.Int(), 10)
 
 	b, _ := n(`"ok"`).MarshalJSON()
 	eq(string(b), `"ok"`)
 
-	eq(gson.JSON{}.Raw(), nil)
-	eq(gson.New([]byte(`ok"`)).Raw(), []byte(`ok"`))
+	eq(lazyjson.JSON{}.Raw(), nil)
+	eq(lazyjson.New([]byte(`ok"`)).Raw(), []byte(`ok"`))
 	eq(n(`"ok"`).Str(), "ok")
 	eq(n(`1`).Str(), "1")
 	eq(n(`1.2`).Num(), 1.2)
@@ -75,24 +75,24 @@ func Test(t *testing.T) {
 	eq(j.Get("a.b").Int(), 1)
 	eq(j.Get("c.1").Str(), "y")
 
-	v, _ := j.Gets("c", gson.Query(func(i interface{}) (val interface{}, has bool) {
+	v, _ := j.Gets("c", lazyjson.Query(func(i interface{}) (val interface{}, has bool) {
 		return i.([]interface{})[1], true
 	}))
 	eq(v.Str(), "y")
 
 	eq(j.Get("c").Arr()[1].Str(), "y")
-	eq(gson.New([]int{1, 2}).Arr()[1].Int(), 2)
+	eq(lazyjson.New([]int{1, 2}).Arr()[1].Int(), 2)
 	eq(j.Get("c").Join(" "), "x y z")
 	eq(j.Get("a").Map()["b"].Int(), 1)
-	eq(gson.New(map[string]int{"a": 1}).Map()["a"].Int(), 1)
+	eq(lazyjson.New(map[string]int{"a": 1}).Map()["a"].Int(), 1)
 	eq(len(j.Get("c").Map()), 0)
 
-	eq(gson.New([]gson.JSON{
-		gson.New(1),
-		gson.New(map[string]int{"a": 2}),
+	eq(lazyjson.New([]lazyjson.JSON{
+		lazyjson.New(1),
+		lazyjson.New(map[string]int{"a": 2}),
 	}).Get("1.a").Int(), 2)
 
-	v, _ = gson.New(map[float64]int{2: 3}).Gets(2.0)
+	v, _ = lazyjson.New(map[float64]int{2: 3}).Gets(2.0)
 	eq(v.Int(), 3)
 
 	_, has := j.Gets(true)
@@ -102,10 +102,10 @@ func Test(t *testing.T) {
 	eq(j.Has("a.x"), false)
 	eq(j.Has("c.10"), false)
 
-	onNil := gson.JSON{}
+	onNil := lazyjson.JSON{}
 	eq(onNil.Set("a.b", 10).Get("a.b").Int(), 10)
 
-	self := gson.New(nil)
+	self := lazyjson.New(nil)
 	self.Set("1", "a")
 	self.Set("a.b.1", 1)
 	self.Sets("ok")
@@ -141,7 +141,7 @@ func Test(t *testing.T) {
 	eq(j.Dels("c", "1"), false)
 	eq(j.Dels("xxx", "1"), false)
 	eq(j.Dels(1), false)
-	d := gson.New(1)
+	d := lazyjson.New(1)
 	d.Dels()
 	eq(d.Val(), nil)
 }
@@ -153,7 +153,7 @@ func TestUnmarshal(t *testing.T) {
 		A int `json:"a"`
 	}{}
 
-	g := gson.New([]byte(`{"a":1}`))
+	g := lazyjson.New([]byte(`{"a":1}`))
 
 	err := g.Unmarshal(&v)
 	if err != nil {
@@ -165,9 +165,9 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	g.Get("a")
-	eq(g.Unmarshal(&v).Error(), "gson: value has been parsed")
+	eq(g.Unmarshal(&v).Error(), "lazyjson: value has been parsed")
 
-	eq(gson.JSON{}.Unmarshal(&v).Error(), "gson: no value to unmarshal")
+	eq(lazyjson.JSON{}.Unmarshal(&v).Error(), "lazyjson: no value to unmarshal")
 }
 
 func TestConvertors(t *testing.T) {
@@ -178,16 +178,16 @@ func TestConvertors(t *testing.T) {
 	s := "ok"
 	b := true
 
-	eq(gson.Num(n), &n)
-	eq(gson.Int(i), &i)
-	eq(gson.Str(s), &s)
-	eq(gson.Bool(b), &b)
+	eq(lazyjson.Num(n), &n)
+	eq(lazyjson.Int(i), &i)
+	eq(lazyjson.Str(s), &s)
+	eq(lazyjson.Bool(b), &b)
 }
 
 func TestLab(t *testing.T) {
 }
 
-func n(s string) (j gson.JSON) {
+func n(s string) (j lazyjson.JSON) {
 	_ = json.Unmarshal([]byte(s), &j)
 	return
 }

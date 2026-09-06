@@ -1,4 +1,4 @@
-package gson
+package lazyjson
 
 import (
 	"encoding/json"

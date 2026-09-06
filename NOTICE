@@ -1,0 +1,8 @@
+lazyjson
+Copyright 2026 headlesslab
+
+This product is derived from gson (https://github.com/ysmood/gson),
+Copyright 2020 Yad Smood, licensed under the MIT License (see LICENSE).
+lazyjson's initial code is a snapshot of gson v0.7.3, tag v0.7.3, commit
+c60042b432eb83a5b356d00e7c2db9813ac7e05f (2022-11-24), imported without
+git history. Later changes are lazyjson's own.
